@@ -1,0 +1,17 @@
+canvas {
+    position: fixed;
+    top: 180px;
+    left: 300px;
+    border: 1px solid #000;
+}
+body {
+    background-color: rgb(223, 247, 165);
+    height: 100vh;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+}
+.mb-10 {
+    margin-bottom: 15px;
+  }

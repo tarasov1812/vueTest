@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <img id="myImage" src="coca-cola.png" style="display:none;">
+<canvas id="myCanvas" width="1000" height="200"></canvas>
+
+<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-10">Tipo:</h3>
+      <select class="select select-primary w-full max-w-xs mb-10" id="tipoSelector" onchange="showTextarea()">
+        <option>Imagen</option>
+        <option>Texto</option>
+        <option>Mixto</option>
+      </select>
+    <br>
+      <input type="text" placeholder="Nombre del bloque" class="input input-bordered w-full max-w-xs mb-10" />
+      <div id="textareaContainer" style="display:none;">
+        <textarea class="textarea textarea-bordered h-24 mb-10" placeholder="Escribe el texto"></textarea>
+      </div>
+  
+      
+      <div class="modal-action">
+        <form method="dialog">
+            <button class="btn" onclick="saveAndShowBlocks()">Guardar</button>
+          <button class="btn" onclick="my_modal_5.close()">Cerrar</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("myImage");
+    var selectedAreas = [];
+    var isMouseDown = false;
+
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+
+    canvas.addEventListener("mousedown", function(e) {
+        if (e.button === 2) { 
+            selectedAreas.pop();
+            drawSelectedAreas();
+            e.preventDefault(); 
+            return;
+        }
+
+        isMouseDown = true;
+
+        var startX = e.clientX - canvas.getBoundingClientRect().left;
+        var startY = e.clientY - canvas.getBoundingClientRect().top;
+        var newArea = { startX, startY, endX: startX, endY: startY };
+        selectedAreas.push(newArea);
+        drawSelectedAreas();
+    });
+
+    canvas.addEventListener("mousemove", function(e) {
+        if (!isMouseDown) return;
+
+        var lastArea = selectedAreas[selectedAreas.length - 1];
+        lastArea.endX = e.clientX - canvas.getBoundingClientRect().left;
+        lastArea.endY = e.clientY - canvas.getBoundingClientRect().top;
+
+        drawSelectedAreas();
+    });
+
+    canvas.addEventListener("mouseup", function() {
+        isMouseDown = false;
+        my_modal_5.showModal();
+    });
+
+    canvas.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+    });
+
+    function drawSelectedAreas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 2;
+
+        selectedAreas.forEach(area => {
+            ctx.fillRect(area.startX, area.startY, area.endX - area.startX, area.endY - area.startY);
+            ctx.strokeRect(area.startX, area.startY, area.endX - area.startX, area.endY - area.startY);
+        });
+    }
+</script>
+
+<script>
+    function showTextarea() {
+      var tipoSelector = document.getElementById('tipoSelector');
+      var textareaContainer = document.getElementById('textareaContainer');
+  
+      if (tipoSelector.value === 'Texto' || tipoSelector.value === 'Mixto') {
+        textareaContainer.style.display = 'block';
+      } else {
+        textareaContainer.style.display = 'none';
+      }
+    }
+  </script>
+ <script>
+    function saveAndShowBlocks() {
+        var blockNameInput = document.querySelector('#my_modal_5 input[type="text"]');
+        var blockName = blockNameInput.value;
+
+        if (blockName.trim() === "") {
+            alert("Por favor, ingresa un nombre para el bloque.");
+            return;
+        }
+
+        var newButton = document.createElement('button');
+        newButton.style.width = '120px';
+        newButton.style.height = '40px';
+        newButton.style.backgroundColor = 'brown';
+        newButton.style.borderRadius = '5px';
+        newButton.style.marginTop = '5px';
+        newButton.style.marginLeft = '10px';
+        newButton.style.display = 'block';
+        newButton.textContent = blockName;
+        newButton.addEventListener('click', function() {
+            alert('Pulsaste el boton: ' + blockName);
+        });
+
+        document.body.insertBefore(newButton, document.body.children[2]);
+    }
+</script>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
